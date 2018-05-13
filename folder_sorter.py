@@ -4,11 +4,13 @@
 #		-ignore certain file types
 #		-group certain file types together (mainly for packaging cod4 maps)
 #
-#	Author : Corey Koelewyn
-# Email  : Corey.Koelewyn@gmail.com
-# 
+#	Author 	: Corey Koelewyn
+# Email  	: Corey.Koelewyn@gmail.com
+# Date		: May 11, 2018
 
 import os
+#place any extensions you wish to ignore here
+ignored_extensions = ['torrent']
 
 def files_in_dir(directory_to_scan):
 	return os.listdir(directory_to_scan)
@@ -19,8 +21,9 @@ def extensions_of_files(list_of_files):
 		if files[0] == '.' or os.path.isdir(files):
 			continue #ignores hidden files and folders
 		ext = files.split('.', 1)[1] # split(char, X) does a max of X splits
-		if ext not in list_of_extensions
+		if ext not in list_of_extensions:
 			list_of_extensions.append(ext) 
+	print(list_of_extensions)
 	return list(set(list_of_extensions))
 
 def make_extension_folders(list_of_extensions):
@@ -31,11 +34,20 @@ def make_extension_folders(list_of_extensions):
 			print(extension + " folder already exists")
 	return
 
-def move_to_folders(list_of_files):
+def move_to_folders(list_of_files, ig_ext):
 	for files in list_of_files:
-		if files[0] == '.' or os.path.isdir(files): or files[0] == "folder_sorter"
+		try:
+			ignored = os.path.isdir(files) or files[0] == '.' or files == "folder_sorter.py" or files.split('.', 1)[1] in ig_ext 
+		except:
+			print("skipping " + files)
+			ignored = false
+			continue
+		if ignored:
 			continue #ignores hidden files and folders
-		os.rename(files , files.split('.', 1)[1] + '/' + files)
+		try:
+			os.rename(files , files.split('.', 1)[1] + '/' + files)
+		except:
+			print("something went wrong writing "+ files)
 
 def main():
 	try:
@@ -51,7 +63,7 @@ def main():
 	except:
 		print("error making folders")
 	try:
-		move_to_folders(file_list)
+		move_to_folders(file_list, ignored_extensions)
 	except:
 		print("error moving files")
 
